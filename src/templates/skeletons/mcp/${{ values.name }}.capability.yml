@@ -1,0 +1,47 @@
+naftiko: "0.5"
+info:
+  label: "${{ values.name }}"
+  description: "Exposes weather data via MCP catalog adapters"
+
+capability:
+  exposes:
+    - type: mcp
+      port: 3001
+      namespace: weather-mcp
+      description: "Weather tools for AI agents"
+      tools:
+        - name: get-current-weather
+          description: "Retrieve current weather conditions for a location"
+          inputParameters:
+            - name: location
+              type: string
+              description: "City name or coordinates (lat,lon)"
+          call: open-meteo.get-current
+          with:
+            location: "$this.weather-mcp.location"
+          outputParameters:
+            - type: object
+              mapping: $.current
+              properties:
+                temperature: { type: number, mapping: $.temperature_2m }
+                windspeed: { type: number, mapping: $.windspeed_10m }
+                weathercode: { type: number, mapping: $.weathercode }
+
+  consumes:
+    - type: http
+      namespace: open-meteo
+      baseUri: "https://api.open-meteo.com/v1/"
+      resources:
+        - name: forecast
+          path: forecast
+          operations:
+            - name: get-current
+              method: GET
+              label: "Get Current Weather"
+
+        - name: alerts
+          path: alerts
+          operations:
+            - name: list-alerts
+              method: GET
+              label: "List Active Alerts"

@@ -1,0 +1,125 @@
+apiVersion: scaffolder.backstage.io/v1beta3
+kind: Template
+metadata:
+  name: custom-adapter-template
+  title: Custom Adapter Component
+  description: >
+    Crée un nouveau composant en choisissant un adaptateur parmi
+    Empty, MCP, Rest ou SKILLS. Le fichier de configuration correspondant
+    est personnalisé puis poussé sur GitHub.
+  tags:
+    - custom
+    - adapter
+    - scaffolder
+spec:
+  owner: group:default/platform-team
+  type: service
+
+  # ──────────────────────────────────────────────────
+  # Paramètres saisis par l'utilisateur dans le wizard
+  # ──────────────────────────────────────────────────
+  parameters:
+    - title: Informations du composant
+      required:
+        - name
+        - adapter
+      properties:
+        name:
+          title: Name
+          type: string
+          description: Nom du composant
+          ui:autofocus: true
+          pattern: '^[a-zA-Z0-9_-]+$'
+          minLength: 2
+          maxLength: 64
+
+        adapter:
+          title: Adapter
+          type: string
+          description: Type d'adaptateur à utiliser pour ce composant
+          enum:
+            - Empty
+            - MCP
+            - Rest
+            - SKILLS
+          enumNames:
+            - 'Empty – Squelette vide'
+            - 'MCP – Model Context Protocol'
+            - 'Rest – API REST standard'
+            - 'SKILLS – Gestion de compétences'
+          default: Empty
+
+    - title: Configuration du dépôt GitHub
+      required:
+        - repoUrl
+      properties:
+        repoUrl:
+          title: Repository GitHub cible
+          type: string
+          ui:field: RepoUrlPicker
+          ui:options:
+            allowedHosts:
+              - github.com
+
+  # ──────────────────────────────────────────────────
+  # Étapes d'exécution du scaffolder
+  # ──────────────────────────────────────────────────
+  # fetch:template traite nativement ${{ values.name }}
+  # via le moteur Nunjucks – aucun plugin backend requis.
+  # Chaque étape est gardée ou ignorée grâce à la condition `if:`.
+  steps:
+    - id: fetch-empty
+      name: Fetch skeleton Empty
+      if: ${{ parameters.adapter === 'Empty' }}
+      action: fetch:template
+      input:
+        url: ./skeletons/empty
+        values:
+          name: ${{ parameters.name }}
+
+    - id: fetch-mcp
+      name: Fetch skeleton MCP
+      if: ${{ parameters.adapter === 'MCP' }}
+      action: fetch:template
+      input:
+        url: ./skeletons/mcp
+        values:
+          name: ${{ parameters.name }}
+
+    - id: fetch-rest
+      name: Fetch skeleton Rest
+      if: ${{ parameters.adapter === 'Rest' }}
+      action: fetch:template
+      input:
+        url: ./skeletons/rest
+        values:
+          name: ${{ parameters.name }}
+
+    - id: fetch-skills
+      name: Fetch skeleton SKILLS
+      if: ${{ parameters.adapter === 'SKILLS' }}
+      action: fetch:template
+      input:
+        url: ./skeletons/skills
+        values:
+          name: ${{ parameters.name }}
+
+    - id: publish-github
+      name: Publier sur GitHub
+      action: publish:github
+      input:
+        allowedHosts:
+          - github.com
+        description: Composant ${{ parameters.name }} (adapter ${{ parameters.adapter }}) créé via Backstage
+        repoUrl: ${{ parameters.repoUrl }}
+        defaultBranch: main
+
+  # ──────────────────────────────────────────────────
+  # Résultat affiché à l'utilisateur après création
+  # ──────────────────────────────────────────────────
+  output:
+    links:
+      - title: Voir le dépôt sur GitHub
+        url: ${{ steps['publish-github'].output.remoteUrl }}
+      - title: Ouvrir une Pull Request
+        url: ${{ steps['publish-github'].output.repoContentsUrl }}
