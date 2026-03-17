@@ -68,11 +68,51 @@ spec:
   # via le moteur Nunjucks – aucun plugin backend requis.
   # Chaque étape est gardée ou ignorée grâce à la condition `if:`.
   steps:
-    - id: debug-only
-      name: Debug test
-      action: debug:log
+    - id: fetch-empty
+      name: Fetch skeleton Empty
+      if: ${{ parameters.adapter === 'Empty' }}
+      action: fetch:template
       input:
-        message: "Test - adapter=${{ parameters.adapter }} name=${{ parameters.name }}"
+        url: ./skeletons/empty
+        values:
+          name: ${{ parameters.name }}
+
+    - id: fetch-mcp
+      name: Fetch skeleton MCP
+      if: ${{ parameters.adapter === 'MCP' }}
+      action: fetch:template
+      input:
+        url: ./skeletons/mcp
+        values:
+          name: ${{ parameters.name }}
+
+    - id: fetch-rest
+      name: Fetch skeleton Rest
+      if: ${{ parameters.adapter === 'Rest' }}
+      action: fetch:template
+      input:
+        url: ./skeletons/rest
+        values:
+          name: ${{ parameters.name }}
+
+    - id: fetch-skills
+      name: Fetch skeleton SKILLS
+      if: ${{ parameters.adapter === 'SKILLS' }}
+      action: fetch:template
+      input:
+        url: ./skeletons/skills
+        values:
+          name: ${{ parameters.name }}
+
+    - id: publish-github
+      name: Publier sur GitHub
+      action: publish:github
+      input:
+        allowedHosts:
+          - github.com
+        description: Composant ${{ parameters.name }} (adapter ${{ parameters.adapter }}) créé via Backstage
+        repoUrl: ${{ parameters.repoUrl }}
+        defaultBranch: main
 
   # ──────────────────────────────────────────────────
   # Résultat affiché à l'utilisateur après création
