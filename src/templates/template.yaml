@@ -1,18 +1,17 @@
 apiVersion: scaffolder.backstage.io/v1beta3
 kind: Template
 metadata:
-  name: custom-adapter-template
-  title: Custom Adapter Component
+  name: naftiko-capability-template
+  title: Naftiko Capability Component
   description: >
     Crée un nouveau composant en choisissant un adaptateur parmi
     Empty, MCP, Rest ou SKILLS. Le fichier de configuration correspondant
     est personnalisé puis poussé sur GitHub.
   tags:
-    - custom
-    - adapter
-    - scaffolder
+    - naftiko
+    - capability
 spec:
-  owner: group:default/platform-team
+  owner: user:guest
   type: service
 
   # ──────────────────────────────────────────────────
