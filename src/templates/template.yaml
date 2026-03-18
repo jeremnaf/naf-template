@@ -75,6 +75,8 @@ spec:
         url: ./skeletons/empty
         values:
           name: ${{ parameters.name }}
+          repoOwner: ${{ (parameters.repoUrl | parseRepoUrl).owner }}
+          repoName: ${{ (parameters.repoUrl | parseRepoUrl).repo }}
 
     - id: fetch-mcp
       name: Fetch skeleton MCP
@@ -84,6 +86,8 @@ spec:
         url: ./skeletons/mcp
         values:
           name: ${{ parameters.name }}
+          repoOwner: ${{ (parameters.repoUrl | parseRepoUrl).owner }}
+          repoName: ${{ (parameters.repoUrl | parseRepoUrl).repo }}
 
     - id: fetch-rest
       name: Fetch skeleton Rest
@@ -93,6 +97,8 @@ spec:
         url: ./skeletons/rest
         values:
           name: ${{ parameters.name }}
+          repoOwner: ${{ (parameters.repoUrl | parseRepoUrl).owner }}
+          repoName: ${{ (parameters.repoUrl | parseRepoUrl).repo }}
 
     - id: fetch-skills
       name: Fetch skeleton SKILLS
@@ -102,6 +108,8 @@ spec:
         url: ./skeletons/skills
         values:
           name: ${{ parameters.name }}
+          repoOwner: ${{ (parameters.repoUrl | parseRepoUrl).owner }}
+          repoName: ${{ (parameters.repoUrl | parseRepoUrl).repo }}
 
     - id: publish-github
       name: Publier sur GitHub
@@ -110,6 +118,13 @@ spec:
         description: Composant ${{ parameters.name }} (adapter ${{ parameters.adapter }}) créé via Backstage
         repoUrl: ${{ parameters.repoUrl }}
         defaultBranch: main
+      
+    - id: register-catalog
+      name: Enregistrer dans le catalogue Backstage
+      action: catalog:register
+      input:
+        repoContentsUrl: ${{ steps['publish-github'].output.repoContentsUrl }}
+        catalogInfoPath: /catalog-info.yaml
 
   # ──────────────────────────────────────────────────
   # Résultat affiché à l'utilisateur après création
@@ -120,3 +135,5 @@ spec:
         url: ${{ steps['publish-github'].output.remoteUrl }}
       - title: Ouvrir une Pull Request
         url: ${{ steps['publish-github'].output.repoContentsUrl }}
+      - title: Voir le composant dans le catalogue
+        url: ${{ steps['register-catalog'].output.entityRef }}
