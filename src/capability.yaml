@@ -74,6 +74,7 @@ spec:
         url: ./skeletons/capabilities
         values:
           name: ${{ parameters.name }}
+          adapter: ${{ parameters.adapter }}
           repoOwner: ${{ (parameters.repoUrl | parseRepoUrl).owner }}
           repoName: ${{ (parameters.repoUrl | parseRepoUrl).repo }}
 
