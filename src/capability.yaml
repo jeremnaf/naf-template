@@ -2,7 +2,7 @@ apiVersion: scaffolder.backstage.io/v1beta3
 kind: Template
 metadata:
   name: naftiko-capability-template
-  title: Naftiko Capability Component
+  title: Naftiko Capability
   description: >
     Crée un nouveau composant en choisissant un adaptateur parmi
     Empty, MCP, Rest ou SKILLS. Le fichier de configuration correspondant
@@ -67,45 +67,11 @@ spec:
   # via le moteur Nunjucks – aucun plugin backend requis.
   # Chaque étape est gardée ou ignorée grâce à la condition `if:`.
   steps:
-    - id: fetch-empty
-      name: Fetch skeleton Empty
-      if: ${{ parameters.adapter === 'Empty' }}
+    - id: fetch-capability
+      name: Fetch skeleton capability files
       action: fetch:template
       input:
-        url: ./skeletons/empty
-        values:
-          name: ${{ parameters.name }}
-          repoOwner: ${{ (parameters.repoUrl | parseRepoUrl).owner }}
-          repoName: ${{ (parameters.repoUrl | parseRepoUrl).repo }}
-
-    - id: fetch-mcp
-      name: Fetch skeleton MCP
-      if: ${{ parameters.adapter === 'MCP' }}
-      action: fetch:template
-      input:
-        url: ./skeletons/mcp
-        values:
-          name: ${{ parameters.name }}
-          repoOwner: ${{ (parameters.repoUrl | parseRepoUrl).owner }}
-          repoName: ${{ (parameters.repoUrl | parseRepoUrl).repo }}
-
-    - id: fetch-rest
-      name: Fetch skeleton Rest
-      if: ${{ parameters.adapter === 'Rest' }}
-      action: fetch:template
-      input:
-        url: ./skeletons/rest
-        values:
-          name: ${{ parameters.name }}
-          repoOwner: ${{ (parameters.repoUrl | parseRepoUrl).owner }}
-          repoName: ${{ (parameters.repoUrl | parseRepoUrl).repo }}
-
-    - id: fetch-skills
-      name: Fetch skeleton SKILLS
-      if: ${{ parameters.adapter === 'SKILLS' }}
-      action: fetch:template
-      input:
-        url: ./skeletons/skills
+        url: ./skeletons/capabilities
         values:
           name: ${{ parameters.name }}
           repoOwner: ${{ (parameters.repoUrl | parseRepoUrl).owner }}

@@ -1,3 +1,0 @@
-naftiko: "0.5"
-info:
-  label: "${{ values.name }}"
