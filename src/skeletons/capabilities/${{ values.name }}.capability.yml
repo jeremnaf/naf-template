@@ -66,7 +66,7 @@ capability:
                         title: { type: string, mapping: $.title }
                         severity: { type: string, mapping: $.severity }
   {% endif %}
-  {% if 'SKILLS' in values.adapters % }
+  {% if 'SKILLS' in values.adapters %}
     - type: skill
       port: 4000
       namespace: weather-skills
