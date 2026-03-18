@@ -4,9 +4,9 @@ metadata:
   name: naftiko-capability-template
   title: Naftiko Capability
   description: >
-    Crée un nouveau composant en choisissant un adaptateur parmi
-    Empty, MCP, Rest ou SKILLS. Le fichier de configuration correspondant
-    est personnalisé puis poussé sur GitHub.
+    Create a new capability component by choosing an adapter from
+    Empty, MCP, Rest, or SKILLS. The corresponding configuration file
+    is then customized and pushed to GitHub.
   tags:
     - naftiko
     - capability
@@ -15,45 +15,61 @@ spec:
   type: service
 
   # ──────────────────────────────────────────────────
-  # Paramètres saisis par l'utilisateur dans le wizard
+  # Parameters entered by the user in the wizard
   # ──────────────────────────────────────────────────
   parameters:
-    - title: Informations du composant
+    - title: Capability Information
       required:
         - name
-        - adapter
+        - empty
       properties:
         name:
           title: Name
           type: string
-          description: Nom du composant
+          description: Name of your capability
           ui:autofocus: true
           pattern: '^[a-zA-Z0-9_-]+$'
           minLength: 2
           maxLength: 64
 
-        adapter:
-          title: Adapter
-          type: string
-          description: Type d'adaptateur à utiliser pour ce composant
-          enum:
-            - Empty
-            - MCP
-            - Rest
-            - SKILLS
-          enumNames:
-            - 'Empty – Squelette vide'
-            - 'MCP – Model Context Protocol'
-            - 'Rest – API REST standard'
-            - 'SKILLS – Gestion de compétences'
-          default: Empty
+        empty:
+          title: Empty
+          description: Tick to create an empty capability configuration skeleton
+          type: boolean
+          default: false
+          ui:widget: checkbox
 
-    - title: Configuration du dépôt GitHub
+      dependencies:
+        empty:
+          oneOf:
+            - properties:
+                empty:
+                  enum: [true]
+            - properties:
+                empty:
+                  enum: [false]
+                adapters:
+                  title: Adapters
+                  type: array
+                  description: Select one or more adapters
+                  minItems: 1
+                  uniqueItems: true
+                  items:
+                    type: string
+                    enum:
+                      - MCP
+                      - Rest
+                      - SKILLS
+                  ui:widget: checkboxes
+              required:
+                - adapters
+
+    - title: GitHub repository configuration
       required:
         - repoUrl
       properties:
         repoUrl:
-          title: Repository GitHub cible
+          title: Target GitHub Repository
           type: string
           ui:field: RepoUrlPicker
           ui:options:
@@ -61,46 +77,44 @@ spec:
               - github.com
 
   # ──────────────────────────────────────────────────
-  # Étapes d'exécution du scaffolder
+  # Execution steps of scaffolder
   # ──────────────────────────────────────────────────
-  # fetch:template traite nativement ${{ values.name }}
-  # via le moteur Nunjucks – aucun plugin backend requis.
-  # Chaque étape est gardée ou ignorée grâce à la condition `if:`.
   steps:
-    - id: fetch-capability
+    - id: fetch-skeleton
       name: Fetch skeleton capability files
       action: fetch:template
       input:
         url: ./skeletons/capabilities
         values:
           name: ${{ parameters.name }}
-          adapter: ${{ parameters.adapter }}
+          empty: ${{ parameters.empty }}
+          adapters: ${{ parameters.adapters if parameters.adapters else [] }}
           repoOwner: ${{ (parameters.repoUrl | parseRepoUrl).owner }}
           repoName: ${{ (parameters.repoUrl | parseRepoUrl).repo }}
 
     - id: publish-github
-      name: Publier sur GitHub
+      name: Publish on GitHub
       action: publish:github
       input:
-        description: Composant ${{ parameters.name }} (adapter ${{ parameters.adapter }}) créé via Backstage
+        description: Capability ${{ parameters.name }} (${{ parameters.adapters | join(', ') }}) created via Backstage
         repoUrl: ${{ parameters.repoUrl }}
         defaultBranch: main
       
     - id: register-catalog
-      name: Enregistrer dans le catalogue Backstage
+      name: Register in Backstage catalog
       action: catalog:register
       input:
         repoContentsUrl: ${{ steps['publish-github'].output.repoContentsUrl }}
         catalogInfoPath: /catalog-info.yaml
 
   # ──────────────────────────────────────────────────
-  # Résultat affiché à l'utilisateur après création
+  # Result displayed to the user after creation
   # ──────────────────────────────────────────────────
   output:
     links:
-      - title: Voir le dépôt sur GitHub
+      - title: View repository on GitHub
         url: ${{ steps['publish-github'].output.remoteUrl }}
-      - title: Ouvrir une Pull Request
+      - title: Open a Pull Request
         url: ${{ steps['publish-github'].output.repoContentsUrl }}
-      - title: Voir le composant dans le catalogue
+      - title: View the capability component in the catalog
         url: ${{ steps['register-catalog'].output.entityRef }}

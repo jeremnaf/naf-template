@@ -1,12 +1,15 @@
 naftiko: "0.5"
 info:
   label: "${{ values.name }}"
-{% if values.adapter !== 'Empty' %}
+{% if values.empty %}
+
+# Empty capability – complete the content by hand.
+{% else %}
   description: "Exposes weather data via MCP catalog adapters"
 
 capability:
   exposes:
-  {% if values.adapter === 'MCP' %}
+  {% if 'MCP' in values.adapters %}
     - type: mcp
       port: 3001
       namespace: weather-mcp
@@ -28,7 +31,8 @@ capability:
                 temperature: { type: number, mapping: $.temperature_2m }
                 windspeed: { type: number, mapping: $.windspeed_10m }
                 weathercode: { type: number, mapping: $.weathercode }
-  {% elif values.adapter === 'Rest' %}
+  {% endif %}
+  {% if 'Rest' in values.adapters %}
     - type: rest
       port: 3000
       namespace: weather-api
@@ -61,7 +65,8 @@ capability:
                       properties:
                         title: { type: string, mapping: $.title }
                         severity: { type: string, mapping: $.severity }
-  {% elif values.adapter === 'SKILLS' %}
+  {% endif %}
+  {% if 'SKILLS' in values.adapters % }
     - type: skill
       port: 4000
       namespace: weather-skills
