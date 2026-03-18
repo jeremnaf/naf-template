@@ -107,8 +107,6 @@ spec:
       name: Publier sur GitHub
       action: publish:github
       input:
-        allowedHosts:
-          - github.com
         description: Composant ${{ parameters.name }} (adapter ${{ parameters.adapter }}) créé via Backstage
         repoUrl: ${{ parameters.repoUrl }}
         defaultBranch: main
