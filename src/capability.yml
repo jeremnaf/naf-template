@@ -94,36 +94,25 @@ spec:
   # ──────────────────────────────────────────────────
   steps:
     - id: fetch-consumed-apis
-      name: "Fetch API entity: ${{ each.value }}"
-      each: ${{ parameters.consumedApis }}
+      name: Fetch consumed API entities from catalog
+      if: ${{ (parameters.consumedApis | length) > 0 }}
       action: catalog:fetch
       input:
-        entityRef: ${{ each.value }}
+        entityRefs: ${{ parameters.consumedApis }}
 
     - id: warn-missing-openapi
-      name: "Warn — no OpenAPI definition for ${{ each.value }}"
-      each: ${{ parameters.consumedApis }}
-      if: ${{ (steps['fetch-consumed-apis'].output[each.index].entity.spec.type | default('')) !== 'openapi' }}
+      name: Warn — APIs without OpenAPI definition
+      if: ${{ (parameters.consumedApis | length) > 0 }}
       action: debug:log
       input:
-        message: >
-          WARNING: '${{ each.value }}' is not of type 'openapi'
-          (actual type: '${{ steps['fetch-consumed-apis'].output[each.index].entity.spec.type | default('undefined') }}').
-          No OpenAPI definition will be available for this API in the capability configuration.
+        message: "WARNING: APIs without OpenAPI definition: ${{ steps['fetch-consumed-apis'].output.entities | rejectattr('spec.type', 'equalto', 'openapi') | map(attribute='metadata.name') | list | join(', ') | default('none') }}"
 
     - id: log-consumed-openapis
       name: List retrieved OpenAPI definitions
       if: ${{ (parameters.consumedApis | length) > 0 }}
       action: debug:log
       input:
-        message: >
-          OpenAPI definitions retrieved (${{ steps['fetch-consumed-apis'].output | length }} API(s)):
-          ${{ steps['fetch-consumed-apis'].output
-            | selectattr('entity.spec.type', 'equalto', 'openapi')
-            | map(attribute='entity.metadata.name')
-            | list
-            | join(', ')
-            | default('none') }}
+        message: "OpenAPI definitions retrieved: ${{ steps['fetch-consumed-apis'].output.entities | selectattr('spec.type', 'equalto', 'openapi') | map(attribute='metadata.name') | list | join(', ') | default('none') }}"
 
     - id: fetch-skeleton
       name: Fetch skeleton capability files
@@ -134,11 +123,7 @@ spec:
           name: ${{ parameters.name }}
           empty: ${{ parameters.empty }}
           exposes: ${{ parameters.exposes if parameters.exposes else [] }}
-          consumedOpenApis: ${{ steps['fetch-consumed-apis'].output
-            | selectattr('entity.spec.type', 'equalto', 'openapi')
-            | map(attribute='entity')
-            | list
-            | default([]) }}
+          consumedOpenApis: ${{ steps['fetch-consumed-apis'].output.entities | selectattr('spec.type', 'equalto', 'openapi') | list | default([]) }}
           repoOwner: ${{ (parameters.repoUrl | parseRepoUrl).owner }}
           repoName: ${{ (parameters.repoUrl | parseRepoUrl).repo }}
 
@@ -169,13 +154,7 @@ spec:
   output:
     text:
       - title: Consumed OpenAPI definitions
-        content: |
-          ${{ steps['fetch-consumed-apis'].output
-            | selectattr('entity.spec.type', 'equalto', 'openapi')
-            | map(attribute='entity.metadata.name')
-            | list
-            | join('\n')
-            | default('No OpenAPI definition found among selected APIs.') }}
+        content: "${{ steps['fetch-consumed-apis'].output.entities | selectattr('spec.type', 'equalto', 'openapi') | map(attribute='metadata.name') | list | join(', ') | default('No OpenAPI definition found among selected APIs.') }}"
     #links:
     #  - title: View repository on GitHub
     #    url: ${{ steps['publish-github'].output.remoteUrl }}
