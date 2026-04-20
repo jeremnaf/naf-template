@@ -163,11 +163,20 @@ spec:
   # Result displayed to the user after creation
   # ──────────────────────────────────────────────────
   output:
-    links:
-      # - title: View repository on GitHub
-      #  url: ${{ steps['publish-github'].output.remoteUrl }}
-      # - title: Open a Pull Request
-      #  url: ${{ steps['publish-github'].output.repoContentsUrl }}
-      # - title: View the capability component in the catalog
-      #  icon: catalog
-      #  entityRef: ${{ steps['register-catalog'].output.entityRef }}
+    text:
+      - title: Consumed OpenAPI definitions
+        content: |
+          ${{ steps['fetch-consumed-apis'].output.entities
+            | selectattr('spec.type', 'equalto', 'openapi')
+            | map(attribute='metadata.name')
+            | list
+            | join('\n')
+            | default('No OpenAPI definition found among selected APIs.') }}
+    #links:
+    #  - title: View repository on GitHub
+    #    url: ${{ steps['publish-github'].output.remoteUrl }}
+    #  - title: Open a Pull Request
+    #    url: ${{ steps['publish-github'].output.repoContentsUrl }}
+    #  - title: View the capability component in the catalog
+    #    icon: catalog
+    #    entityRef: ${{ steps['register-catalog'].output.entityRef }}
