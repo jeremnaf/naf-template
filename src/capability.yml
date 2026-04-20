@@ -44,13 +44,6 @@ spec:
             - properties:
                 empty:
                   enum: [true]
-                version:
-                  title: Capability version
-                  type: string
-                  default: v1.0.0-alpha1
-                  pattern: '^v?\d+\.\d+\.\d+(-[a-zA-Z0-9]+(\.[a-zA-Z0-9]+)*)?$'
-              required:
-                - version
             - properties:
                 empty:
                   enum: [false]
@@ -67,14 +60,22 @@ spec:
                       - REST
                       - Agent Skills
                   ui:widget: checkboxes
-                version:
-                  title: Capability version
-                  type: string
-                  default: v1.0.0-alpha1
-                  pattern: '^v?\d+\.\d+\.\d+(-[a-zA-Z0-9]+(\.[a-zA-Z0-9]+)*)?$'
               required:
                 - exposes
-                - version
+
+    - title: API consumption
+      properties:
+        consumedApis:
+          title: Consumed APIs
+          type: array
+          description: Select the APIs this capability will consume from the catalog
+          ui:field: MultiEntityPicker
+          ui:options:
+            catalogFilter:
+              kind: API
+            defaultKind: API
+          items:
+            type: string
 
     - title: GitHub repository configuration
       required:
@@ -92,16 +93,48 @@ spec:
   # Execution steps of scaffolder
   # ──────────────────────────────────────────────────
   steps:
+    - id: fetch-consumed-apis
+      name: Fetch consumed API entities from catalog
+      if: ${{ (parameters.consumedApis | length) > 0 }}
+      action: catalog:fetch
+      input:
+        entityRefs: ${{ parameters.consumedApis }}
+
+    - id: warn-missing-openapi
+      name: "Warn — no OpenAPI definition for ${{ each.value }}"
+      each: ${{ parameters.consumedApis }}
+      if: ${{ (steps['fetch-consumed-apis'].output.entities[each.index].spec.type | default('')) !== 'openapi' }}
+      action: debug:log
+      input:
+        message: >
+          WARNING: '${{ each.value }}' is not of type 'openapi'
+          (actual type: '${{ steps['fetch-consumed-apis'].output.entities[each.index].spec.type | default('undefined') }}').
+          No OpenAPI definition will be available for this API in the capability configuration.
+
+    - id: log-consumed-openapis
+      name: List retrieved OpenAPI definitions
+      if: ${{ (parameters.consumedApis | length) > 0 }}
+      action: debug:log
+      input:
+        message: >
+          OpenAPI definitions retrieved (${{ steps['fetch-consumed-apis'].output.entities | length }} API(s)):
+          ${{ steps['fetch-consumed-apis'].output.entities
+            | selectattr('spec.type', 'equalto', 'openapi')
+            | map(attribute='metadata.name')
+            | list
+            | join(', ')
+            | default('none') }}
+
     - id: fetch-skeleton
       name: Fetch skeleton capability files
       action: fetch:template
       input:
         url: ./skeletons/capabilities
         values:
-          version: ${{ parameters.version }}
           name: ${{ parameters.name }}
           empty: ${{ parameters.empty }}
           exposes: ${{ parameters.exposes if parameters.exposes else [] }}
+          consumedOpenApis: ${{ steps['fetch-consumed-apis'].output.entities | default([]) }}
           repoOwner: ${{ (parameters.repoUrl | parseRepoUrl).owner }}
           repoName: ${{ (parameters.repoUrl | parseRepoUrl).repo }}
 
