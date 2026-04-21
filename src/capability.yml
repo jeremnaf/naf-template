@@ -93,26 +93,12 @@ spec:
   # Execution steps of scaffolder
   # ──────────────────────────────────────────────────
   steps:
-    - id: fetch-consumed-apis
-      name: Fetch consumed API entities from catalog
+    - id: import-openapi
+      name: Import OpenAPI definitions
       if: ${{ (parameters.consumedApis | length) > 0 }}
-      action: catalog:fetch
+      action: naftiko:import:openapi
       input:
-        entityRefs: ${{ parameters.consumedApis }}
-
-    - id: warn-missing-openapi
-      name: Warn — APIs without OpenAPI definition
-      if: ${{ (parameters.consumedApis | length) > 0 }}
-      action: debug:log
-      input:
-        message: "WARNING: APIs without OpenAPI definition: ${{ steps['fetch-consumed-apis'].output.entities | rejectattr('spec.type', 'equalto', 'openapi') | map(attribute='metadata.name') | list | join(', ') | default('none') }}"
-
-    - id: log-consumed-openapis
-      name: List retrieved OpenAPI definitions
-      if: ${{ (parameters.consumedApis | length) > 0 }}
-      action: debug:log
-      input:
-        message: "OpenAPI definitions retrieved: ${{ steps['fetch-consumed-apis'].output.entities | selectattr('spec.type', 'equalto', 'openapi') | map(attribute='metadata.name') | list | join(', ') | default('none') }}"
+        consumedApis: ${{ parameters.consumedApis }}
 
     - id: fetch-skeleton
       name: Fetch skeleton capability files
@@ -123,7 +109,7 @@ spec:
           name: ${{ parameters.name }}
           empty: ${{ parameters.empty }}
           exposes: ${{ parameters.exposes if parameters.exposes else [] }}
-          consumedOpenApis: ${{ steps['fetch-consumed-apis'].output.entities | selectattr('spec.type', 'equalto', 'openapi') | list | default([]) }}
+          consumedOpenApiUrls: ${{ steps['import-openapi'].output.openApiUrls | default([]) }}
           repoOwner: ${{ (parameters.repoUrl | parseRepoUrl).owner }}
           repoName: ${{ (parameters.repoUrl | parseRepoUrl).repo }}
 
@@ -153,8 +139,8 @@ spec:
   # ──────────────────────────────────────────────────
   output:
     text:
-      - title: Consumed OpenAPI definitions
-        content: "${{ steps['fetch-consumed-apis'].output.entities | selectattr('spec.type', 'equalto', 'openapi') | map(attribute='metadata.name') | list | join(', ') | default('No OpenAPI definition found among selected APIs.') }}"
+      - title: Consumed APIs
+        content: "${{ parameters.consumedApis | join(', ') | default('No APIs selected.') }}"
     #links:
     #  - title: View repository on GitHub
     #    url: ${{ steps['publish-github'].output.remoteUrl }}
