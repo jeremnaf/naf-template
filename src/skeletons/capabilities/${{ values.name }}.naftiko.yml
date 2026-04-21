@@ -1,4 +1,4 @@
-naftiko: "${{ values.version }}"
+naftiko: "1.0.0-alpha2"
 info:
   label: "${{ values.name }}"
 {% if not values.empty %}
@@ -100,22 +100,11 @@ capability:
               instruction: "alert-response-guide.md"
   {% endif %}
 
+  {% if values.consumedOpenApiUrls | length > 0 %}
   consumes:
+  {% for url in values.consumedOpenApiUrls %}
     - type: http
-      namespace: open-meteo
-      baseUri: "https://api.open-meteo.com/v1/"
-      resources:
-        - name: forecast
-          path: forecast
-          operations:
-            - name: get-current
-              method: GET
-              label: "Get Current Weather"
-
-        - name: alerts
-          path: alerts
-          operations:
-            - name: list-alerts
-              method: GET
-              label: "List Active Alerts"
+      baseUri: "{{ url }}"
+  {% endfor %}
+  {% endif %}
 {% endif %}
