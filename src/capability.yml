@@ -113,13 +113,13 @@ spec:
           repoOwner: ${{ (parameters.repoUrl | parseRepoUrl).owner }}
           repoName: ${{ (parameters.repoUrl | parseRepoUrl).repo }}
 
-    # - id: publish-github
-    #  name: Publish on GitHub
-    #  action: publish:github
-    #  input:
-    #    description: Capability ${{ parameters.name }} (${{ parameters.exposes | join(', ') }}) created via Backstage
-    #    repoUrl: ${{ parameters.repoUrl }}
-    #    defaultBranch: main
+    - id: publish-github
+      name: Publish on GitHub
+      action: publish:github
+      input:
+        description: Capability ${{ parameters.name }} (${{ parameters.exposes | join(', ') }}) created via Backstage
+        repoUrl: ${{ parameters.repoUrl }}
+        defaultBranch: main
       
     # - id: wait
     #  name: Wait for repo readiness
