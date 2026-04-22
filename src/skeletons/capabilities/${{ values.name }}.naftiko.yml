@@ -104,7 +104,7 @@ capability:
   consumes:
   {% for url in values.consumedOpenApiUrls %}
     - type: http
-      baseUri: "{{ url }}"
+      baseUri: "${{ url }}"
   {% endfor %}
   {% endif %}
 {% endif %}
