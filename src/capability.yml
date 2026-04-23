@@ -65,7 +65,7 @@ spec:
 
     - title: API consumption
       properties:
-        consumedApis:
+        consumedCatalogApis:
           title: Consumed APIs
           type: array
           description: Select the APIs this capability will consume from the catalog
@@ -94,11 +94,11 @@ spec:
   # ──────────────────────────────────────────────────
   steps:
     - id: import-openapi
-      name: Import OpenAPI definitions
-      if: ${{ (parameters.consumedApis | length) > 0 }}
+      name: Convert selected catalog APIs (OpenAPI) into Naftiko consumes files
+      if: ${{ (parameters.consumedCatalogApis | length) > 0 }}
       action: naftiko:import:openapi
       input:
-        consumedApis: ${{ parameters.consumedApis }}
+        consumedCatalogApis: ${{ parameters.consumedCatalogApis }}
 
     - id: fetch-skeleton
       name: Fetch skeleton capability files
@@ -109,7 +109,7 @@ spec:
           name: ${{ parameters.name }}
           empty: ${{ parameters.empty }}
           exposes: ${{ parameters.exposes if parameters.exposes else [] }}
-          consumedOpenApiUrls: ${{ steps['import-openapi'].output.openApiUrls | default([]) }}
+          consumes: ${{ steps['import-openapi'].output.consumes | default([]) }}
           repoOwner: ${{ (parameters.repoUrl | parseRepoUrl).owner }}
           repoName: ${{ (parameters.repoUrl | parseRepoUrl).repo }}
 
@@ -140,7 +140,7 @@ spec:
   output:
     text:
       - title: Consumed APIs
-        content: "${{ parameters.consumedApis | join(', ') | default('No APIs selected.') }}"
+        content: "${{ parameters.consumedCatalogApis | join(', ') | default('No APIs selected.') }}"
     #links:
     #  - title: View repository on GitHub
     #    url: ${{ steps['publish-github'].output.remoteUrl }}
