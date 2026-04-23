@@ -1,0 +1,15 @@
+apiVersion: backstage.io/v1alpha1
+kind: API
+metadata:
+  name: naftiko-shipyard-maritime-registry-api
+  description: Mock API for shipyard maritime registry
+  tags:
+    - maritime
+    - registry
+    - mock
+spec:
+  type: openapi
+  lifecycle: experimental
+  owner: user:guest
+  definition:
+    $text: https://raw.githubusercontent.com/jeremnaf/naf-template/main/src/resources/openapi/registry-mock-api.yml
