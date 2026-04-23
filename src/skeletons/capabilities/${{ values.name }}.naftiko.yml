@@ -100,11 +100,11 @@ capability:
               instruction: "alert-response-guide.md"
   {% endif %}
 
-  {% if values.consumedOpenApiUrls | length > 0 %}
+  {% if values.consumes | length > 0 %}
   consumes:
-  {% for url in values.consumedOpenApiUrls %}
-    - type: http
-      baseUri: "${{ url }}"
+  {% for consumesEntry in values.consumes %}
+    - import: ${{ consumesEntry.namespace }}
+      location: ${{ consumesEntry.fileName }}
   {% endfor %}
   {% endif %}
 {% endif %}
