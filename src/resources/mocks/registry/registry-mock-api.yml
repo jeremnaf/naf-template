@@ -1,6 +1,6 @@
 openapi: 3.0.3
 info:
-  title: Naftiko Shipyard Maritime Registry API bis
+  title: Naftiko Shipyard Maritime Registry API
   version: 1.0.0-alpha1
 
 servers:
