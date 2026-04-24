@@ -1,12 +1,12 @@
 naftiko: "1.0.0-alpha2"
 info:
   label: "${{ values.name }}"
-{% if not values.empty %}
+{%- if not values.empty %}
   description: "Complete the description of your ${{ values.name }} capability"
 
 capability:
   exposes:
-  {% if 'MCP' in values.exposes %}
+  {%- if 'MCP' in values.exposes %}
     - type: mcp
       address: "0.0.0.0" # Needed in Docker context. Permits to access the MCP with localhost from outside the container.
       port: 3001
@@ -29,8 +29,8 @@ capability:
       #          temperature: { type: number, mapping: $.temperature_2m }
       #          windspeed: { type: number, mapping: $.windspeed_10m }
       #          weathercode: { type: number, mapping: $.weathercode }
-  {% endif %}
-  {% if 'REST' in values.exposes %}
+  {%- endif %}
+  {%- if 'REST' in values.exposes %}
     - type: rest
       address: "0.0.0.0" # Needed in Docker context. Permits to access the REST API with localhost from outside the container.
       port: 8080
@@ -49,8 +49,8 @@ capability:
         #      method: GET
         #      call: ${{ consumesEntry.namespace }}.list-ships
 
-  {% endif %}
-  {% if 'Agent Skills' in values.exposes %}
+  {%- endif %}
+  {%- if 'Agent Skills' in values.exposes %}
     - type: skill
       address: "0.0.0.0" # Needed in Docker context. Permits to access the skill with localhost from outside the container.
       port: 4000
@@ -72,13 +72,13 @@ capability:
       #      - name: climate-guide
       #        description: "Reference guide for interpreting climate data and weather patterns"
       #        instruction: "climate-interpretation-guide.md"
-  {% endif %}
+  {%- endif %}
 
-  {% if values.consumes | length > 0 %}
+  {%- if values.consumes | length > 0 %}
   consumes:
-  {% for consumesEntry in values.consumes %}
+  {%- for consumesEntry in values.consumes %}
     - import: ${{ consumesEntry.namespace }}
       location: ${{ consumesEntry.fileName }}
-  {% endfor %}
-  {% endif %}
-{% endif %}
+  {%- endfor %}
+  {%- endif %}
+{%- endif %}
