@@ -107,6 +107,7 @@ spec:
         url: ./skeletons/capabilities
         values:
           name: ${{ parameters.name }}
+          namespaceBase: ${{ parameters.name | replace(' ', '-') | replace(r/(?<=[a-zA-Z0-9])([A-Z])/g, '-$1') | lower }}
           empty: ${{ parameters.empty }}
           exposes: ${{ parameters.exposes if parameters.exposes else [] }}
           consumes: ${{ steps['import-openapi'].output.consumes | default([]) }}
