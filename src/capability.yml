@@ -122,31 +122,28 @@ spec:
         repoUrl: ${{ parameters.repoUrl }}
         defaultBranch: main
       
-    # - id: wait
-    #  name: Wait for repo readiness
-    #  action: debug:wait
-    #  input:
-    #    seconds: 2
+    - id: wait
+      name: Wait for repo readiness
+      action: debug:wait
+      input:
+        seconds: 2
 
-    # - id: register-catalog
-    #  name: Register in Backstage catalog
-    #  action: catalog:register
-    #  input:
-    #    repoContentsUrl: ${{ steps['publish-github'].output.repoContentsUrl }}
-    #    catalogInfoPath: /catalog-info.yaml
+    - id: register-catalog
+      name: Register in Backstage catalog
+      action: catalog:register
+      input:
+        repoContentsUrl: ${{ steps['publish-github'].output.repoContentsUrl }}
+        catalogInfoPath: /catalog-info.yaml
 
   # ──────────────────────────────────────────────────
   # Result displayed to the user after creation
   # ──────────────────────────────────────────────────
   output:
-    text:
-      - title: Consumed APIs
-        content: "${{ parameters.consumedCatalogApis | join(', ') | default('No APIs selected.') }}"
-    #links:
-    #  - title: View repository on GitHub
-    #    url: ${{ steps['publish-github'].output.remoteUrl }}
-    #  - title: Open a Pull Request
-    #    url: ${{ steps['publish-github'].output.repoContentsUrl }}
-    #  - title: View the capability component in the catalog
-    #    icon: catalog
-    #    entityRef: ${{ steps['register-catalog'].output.entityRef }}
+    links:
+      - title: View repository on GitHub
+        url: ${{ steps['publish-github'].output.remoteUrl }}
+      - title: Open a Pull Request
+        url: ${{ steps['publish-github'].output.repoContentsUrl }}
+      - title: View the capability component in the catalog
+        icon: catalog
+        entityRef: ${{ steps['register-catalog'].output.entityRef }}
