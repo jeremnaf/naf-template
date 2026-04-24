@@ -2,7 +2,7 @@ naftiko: "1.0.0-alpha2"
 info:
   label: "${{ values.name }}"
 {%- if not values.empty %}
-  description: "Complete the description of your ${{ values.name }} capability"
+  description: "Description of your ${{ values.name }} capability" # Please complete the description
 
 capability:
   exposes:
@@ -35,15 +35,20 @@ capability:
       address: "0.0.0.0" # Needed in Docker context. Permits to access the REST API with localhost from outside the container.
       port: 8080
       namespace: ${{ values.namespaceBase }}-rest-api
-      description: "Description of your ${{ values.name }} capability REST API expose" # Please complete the description
       resources:
+        {%- if values.consumes | length > 0 %}
+        {%- for consumesEntry in values.consumes %}
         # This is a global path allowing to forward any request to the consumed API.
-        - path: /${{ values.namespaceBase }}/{path}
+        - path: /${{ consumesEntry.namespace }}/{path}
+          description: "Description of your ${{ values.name }} capability REST API expose" # Please complete the description
           forward:
             targetNamespace: ${{ consumesEntry.namespace }}
+        {%- endfor %}
+        {%- endif %}
         # You can also define more specific paths if needed.
         #- name: ships
         #  path: "/ships"
+        #  description: "Description of your ${{ values.name }} capability REST API expose" # Please complete the description
         #  operations:
         #    - name: list-ships
         #      method: GET
