@@ -22,4 +22,9 @@ spec:
   type: service
   lifecycle: experimental
   owner: user:guest
-  
+  {%- if values.consumes and values.consumes | length > 0 %}
+  consumesApis:
+    {%- for entityRef in values.consumes.catalogEntityRef %}
+    - ${{ entityRef }}
+    {%- endfor %}
+  {%- endif %}
