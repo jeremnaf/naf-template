@@ -66,13 +66,14 @@ spec:
     - title: API consumption
       properties:
         consumedCatalogApis:
-          title: Consumed APIs
+          title: Consumed APIs (OpenAPI)
           type: array
-          description: Select the APIs this capability will consume from the catalog
+          description: Select the APIs this capability will consume from the catalog. Only APIs with an OpenAPI spec are displayed.
           ui:field: MultiEntityPicker
           ui:options:
             catalogFilter:
               kind: API
+              spec.type: openapi
             defaultKind: API
           items:
             type: string
