@@ -79,7 +79,7 @@ capability:
       #        instruction: "climate-interpretation-guide.md"
   {%- endif %}
 
-  {%- if values.consumes | length > 0 %}
+  {%- if values.consumes and values.consumes | length > 0 %}
   consumes:
   {%- for consumesEntry in values.consumes %}
     - import: ${{ consumesEntry.namespace }}
