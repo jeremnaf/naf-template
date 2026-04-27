@@ -24,7 +24,7 @@ spec:
   owner: user:guest
   {%- if values.consumes and values.consumes | length > 0 %}
   consumesApis:
-    {%- for entityRef in values.consumes.catalogEntityRef %}
-    - ${{ entityRef }}
+    {%- for consumesEntry in values.consumes %}
+    - ${{ consumesEntry.catalogEntityRef }}
     {%- endfor %}
   {%- endif %}
