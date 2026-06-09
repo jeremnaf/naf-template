@@ -86,7 +86,7 @@ capability:
   consumes:
   {%- for consumesEntry in values.consumes %}
     - import: ${{ consumesEntry.namespace }}
-      location: ${{ consumesEntry.fileName }}
+      from: ${{ consumesEntry.fileName }}
   {%- endfor %}
   {%- endif %}
 {%- endif %}
