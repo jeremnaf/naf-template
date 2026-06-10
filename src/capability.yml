@@ -148,7 +148,7 @@ spec:
       action: catalog:register
       input:
         repoContentsUrl: ${{ steps['publish-github'].output.repoContentsUrl }}
-        catalogInfoPath: /catalog-info.yaml
+        catalogInfoPath: /backstage/service/catalog-info.yaml
 
   # ──────────────────────────────────────────────────
   # Result displayed to the user after creation
