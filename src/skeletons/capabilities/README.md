@@ -10,6 +10,24 @@ The `${{ values.name }}.ikanos.yml` file is your main capability file. This is t
 
 Depending on wheter you're using Apis from your backstage catalog or not, you can also find other capability files `*-consumes.yml`.
 
-### Catalog info
+### Tech docs
 
-The `catalog-info.yaml` file is useful for the backstage application. It allows you to add a new service component corresponding to this capability in the catalog.
+The mkdocs.yml and the content of the folder /docs contain the technical documentation. It's almost the same as this README file, but with integrated display in the backstage application.
+
+It is based on the backstage TechDocs feature.
+
+### Backstage files
+
+The generated repository contains specific files for integration into Backstage. All these files are located in the /`backstage` folder.
+
+#### Service
+
+The `service/catalog-info.yaml` file is useful for the backstage application. It allows you to add a new service component corresponding to this capability in the catalog.
+
+#### Provided APIs
+
+The `provided-apis/catalog-info.yaml` and the `provided-apis/openapi.yaml` files are used to add a new API in the backstage catalog. This is the API provided by the new service.
+
+### Deployment files
+
+The generated repository contains specific files for integration with Kubernetes. All these files are located in the /`deploy` folder.
