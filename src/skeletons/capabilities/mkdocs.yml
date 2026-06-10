@@ -3,6 +3,8 @@ site_description: Documentation for ${{ values.name }}
 
 nav:
   - Home: index.md
+  - Backstage: backstage.md
+  - Deployment: deploy.md
 
 plugins:
   - techdocs-core
