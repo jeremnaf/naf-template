@@ -30,3 +30,5 @@ spec:
     - ${{ consumesEntry.catalogEntityRef }}
     {%- endfor %}
   {%- endif %}
+  providesApis:
+    - api:naftiko-warden/${{ values.name }}-api
