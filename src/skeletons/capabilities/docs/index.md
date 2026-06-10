@@ -10,14 +10,16 @@ The `${{ values.name }}.ikanos.yml` file is your main capability file. This is t
 
 Depending on wheter you're using Apis from your backstage catalog or not, you can also find other capability files `*-consumes.yml`.
 
-### Catalog info
-
-The `catalog-info.yaml` file is useful for the backstage application. It allows you to add a new service component corresponding to this capability in the catalog.
-
-### README & Tech docs and README
+### README & Tech docs
 
 The root README.md is the standard README file you can find in a repository to explain its purpose.
 
 The mkdocs.yml and the content of the folder /docs contain the technical documentation you are reading now :) It's almost the same as the README file, but presented in a smarter and more integrated way.
 
 It is based on the backstage TechDocs feature.
+
+### Technical files
+
+Some technical files are also generated in the repository:
+* [Backstage files](./backstage.md)
+* [Deployment files](./deploy.md)
