@@ -101,6 +101,7 @@ spec:
       action: naftiko-warden:import:openapi
       input:
         consumedCatalogApis: ${{ parameters.consumedCatalogApis }}
+        generateDeployFiles: true
 
     - id: fetch-skeleton
       name: Fetch skeleton capability files
