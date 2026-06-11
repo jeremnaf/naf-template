@@ -102,6 +102,7 @@ spec:
       input:
         consumedCatalogApis: ${{ parameters.consumedCatalogApis }}
         generateDeployFiles: true
+        parentCapabilityName: ${{ parameters.name }}
 
     - id: fetch-skeleton
       name: Fetch skeleton capability files
