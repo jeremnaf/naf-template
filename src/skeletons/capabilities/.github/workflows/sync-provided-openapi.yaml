@@ -25,7 +25,7 @@ concurrency:
   cancel-in-progress: true
 
 env:
-  IKANOS_VERSION: v1.0.0-beta1
+  IKANOS_VERSION: v1.0.0-alpha4
   CAPABILITY_FILE: "${{ values.name }}.ikanos.yml"
   OPENAPI_OUTPUT: backstage/provided-apis/openapi.yaml
 
