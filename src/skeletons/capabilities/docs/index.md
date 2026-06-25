@@ -23,3 +23,5 @@ It is based on the backstage TechDocs feature.
 Some technical files are also generated in the repository:
 * [Backstage files](./backstage.md)
 * [Deployment files](./deploy.md)
+
+A GitHub Actions workflow (`.github/workflows/sync-openapi.yaml`) also keeps the provided OpenAPI spec in sync with the capability file. See [Automatic OpenAPI synchronization](./backstage.md#automatic-openapi-synchronization).
